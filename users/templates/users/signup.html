@@ -1,0 +1,10 @@
+<html>
+  {% include "urlshortner/header.html" %}
+  <div class="centralSection">
+    <h1 class="colored">Fill up the form to sign up</h1>
+    <form action="{% url 'users:signupview' %}" method="post">
+      {% csrf_token %} {{ form }}
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+</html>

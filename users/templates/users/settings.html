@@ -1,0 +1,19 @@
+<html>
+  {% include "urlshortner/header.html" %} {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li>
+      {% if message.tags %}
+      <span class="{{ message.tags }}">{% endif %}{{ message }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <div class="centralSection">
+    <h1 class="colored">Settings & Profile</h1>
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <input type="submit" value="Save" />
+    </form>
+  </div>
+</html>

@@ -1,0 +1,19 @@
+<html>
+  {% include "urlshortner/header.html" %} {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li>
+      {% if message.tags %}
+      <span class="{{ message.tags }}">{% endif %}{{ message }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <div class="centralSection">
+    <h1 class="colored">Fill up the form to log in</h1>
+    <form action="{% url 'users:loginview' %}" method="post">
+      {% csrf_token %} {{ form }}
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+</html>

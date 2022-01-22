@@ -1,0 +1,38 @@
+version: "3.3"
+   
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./static:/app/static
+    depends_on:
+      - web
+    restart: "on-failure"
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file: 
+      - .env
+    restart: "on-failure"
+  web:
+    build: .
+    command: >
+      sh -c "python3 manage.py makemigrations users &&
+             python3 manage.py migrate &&
+             python3 manage.py collectstatic --noinput &&
+             gunicorn --bind 0.0.0.0:8000 config.wsgi"
+    volumes:
+      - .:/app
+      - ./static:/app/static
+    env_file: 
+      - .env
+    expose:
+      - "8000"
+    restart: "on-failure"
+    depends_on:
+      - db

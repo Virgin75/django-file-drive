@@ -1,0 +1,8 @@
+.env
+env
+/env
+migrations
+data
+/data
+static
+/static
