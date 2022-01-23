@@ -20,7 +20,12 @@ class File(models.Model):
         return self.file_name
 
 class Folder(models.Model):
-    foler_name = models.CharField(max_length=50)
+    folder_name = models.CharField(max_length=50)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        null = True
+    )
     parent_folder = models.ForeignKey(
         'Folder',
         null=True,

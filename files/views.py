@@ -2,10 +2,8 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-
-from .models import File
-from .serializers import FileSerializer
+from .models import File, Folder
+from .serializers import FileSerializer, FolderSerializer
 
 class ListCreateFiles(generics.ListCreateAPIView):
     serializer_class = FileSerializer
@@ -25,3 +23,18 @@ class ListCreateFiles(generics.ListCreateAPIView):
         user = self.request.user
 
         serializer.save(file_type=file_type, owner=user)
+
+class ListCreateFolders(generics.ListCreateAPIView):
+    serializer_class = FolderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Folder.objects.filter(owner=user)
+        return queryset
+
+    def perform_create(self, serializer):
+        # Get current user & set him/her as file owner
+        user = self.request.user
+
+        serializer.save(owner=user)
