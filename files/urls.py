@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import ListCreateFiles, ListCreateFolders
+from .views import ListCreateFiles, ListCreateFolders, RetrieveFolderWithFiles
 
 urlpatterns = [
-    path('my-files/', ListCreateFiles.as_view(), name="listcreatefiles"),
-    path('my-folders/', ListCreateFolders.as_view(), name="listcreatefolders"),
+    path('files/', ListCreateFiles.as_view(), name="listcreatefiles"),
+    path('folders/', ListCreateFolders.as_view(), name="listcreatefolders"),
+    path('folders/<int:pk>', RetrieveFolderWithFiles.as_view(), name="retrieveflderwithfiles"),
 ]
