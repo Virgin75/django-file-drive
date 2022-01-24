@@ -19,15 +19,24 @@ class ListCreateFiles(generics.ListCreateAPIView):
         file = self.request.data.get("file")
         file_type = file.content_type
         file_size = file.size / 1000000
+        file_name = file._get_name()
 
         # Get current user & set him/her as file owner
         user = self.request.user
 
         serializer.save(
             file_type=file_type, 
-            file_size=file_size, 
+            file_size=file_size,
+            file_name=file_name, 
             owner=user
         )
+
+class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = FileSerializer
+    queryset = File.objects.all()
+    lookup_field = 'pk'
+
+    
 
 class ListCreateFolders(generics.ListCreateAPIView):
     serializer_class = FolderSerializer
