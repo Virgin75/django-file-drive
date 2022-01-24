@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .models import File, Folder
 from .serializers import FileSerializer, FolderSerializer
-from .permissions import IsObjectOwner
+from .permissions import IsObjectOwner, IsOwnerOrIsPublic
 
 class ListCreateFiles(generics.ListCreateAPIView):
     serializer_class = FileSerializer
@@ -34,6 +34,7 @@ class ListCreateFiles(generics.ListCreateAPIView):
 class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FileSerializer
     queryset = File.objects.all()
+    permissions_classes = [IsOwnerOrIsPublic]
     lookup_field = 'pk'
 
     
