@@ -37,7 +37,7 @@ class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):
     permissions_classes = [IsOwnerOrIsPublic]
     lookup_field = 'pk'
 
-    
+#TODO: Ajouter une vue pour télécharger un fichier et modifier le lien de dl dans le serializer file
 
 class ListCreateFolders(generics.ListCreateAPIView):
     serializer_class = FolderSerializer
@@ -51,7 +51,6 @@ class ListCreateFolders(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         # Get current user & set him/her as file owner
         user = self.request.user
-
         serializer.save(owner=user)
 
 #TODO:Check if requester is owner of folder & files OR some has shared it with him/her
