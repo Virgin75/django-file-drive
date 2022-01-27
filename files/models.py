@@ -20,8 +20,13 @@ class File(models.Model):
         on_delete=models.CASCADE
     )
 
+    @property
+    def download_url(self):
+        return f"/files/download/{self.id}"
+
     def __str__(self):
         return self.file_name
+    
 
 # Ajouter couleur du dossier
 class Folder(models.Model):

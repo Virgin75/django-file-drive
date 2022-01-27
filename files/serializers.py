@@ -4,13 +4,24 @@ from rest_framework import serializers
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
-        fields = ['id', 'created_at', 'updated_at', 'file_name', 'file_type', 'file_size', 'file', 'owner', 'parent_folder']
+        fields = [
+            'id', 
+            'created_at', 
+            'updated_at', 
+            'file_name', 
+            'file_type', 
+            'file_size', 
+            'file', 
+            'owner', 
+            'parent_folder',
+        ]
         extra_kwargs = {
             'file_type': {'read_only': True},
             'file_size': {'read_only': True},
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
-            'owner': {'read_only': True}
+            'owner': {'read_only': True},
+            'file': {'write_only': True},
         }
 
 class FolderSerializer(serializers.ModelSerializer):

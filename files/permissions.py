@@ -25,6 +25,7 @@ class IsOwnerOrIsPublic(permissions.BasePermission):
         if request.method == 'GET':
             user = self.request.user
             owner = obj.owner
+            print(owner, user)
 
             if user == owner or obj.is_public:
                 return True

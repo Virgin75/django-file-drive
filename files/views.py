@@ -1,5 +1,6 @@
+from django.http import HttpResponse
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, views, response
 from rest_framework.permissions import IsAuthenticated
 from .models import File, Folder
 from .serializers import FileSerializer, FolderSerializer
@@ -24,12 +25,34 @@ class ListCreateFiles(generics.ListCreateAPIView):
         # Get current user & set him/her as file owner
         user = self.request.user
 
+
         serializer.save(
             file_type=file_type, 
             file_size=file_size,
-            file_name=file_name, 
+            file_name=file_name,
             owner=user
         )
+
+class DownloadFile(views.APIView):
+    serializer_class = FileSerializer
+    permissions_classes = [IsOwnerOrIsPublic]
+
+    def get_queryset(self):
+        id = self.kwargs['pk']
+        file = File.objects.filter(id=id)
+        return file
+    
+    def get(self, request, pk, format=None):
+        """
+        Download the file.
+        """
+        file = File.objects.get(id=pk)
+        print(file.file_name)
+        res = HttpResponse(status=200)
+        res['Content-Type'] = ''
+        res["Content-Disposition"] = f"attachment; filename={file.file_name}"
+        #res['X-Accel-Redirect'] = f"/protected/{file.file_name}"
+        return res
 
 class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FileSerializer
