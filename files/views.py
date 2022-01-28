@@ -34,8 +34,7 @@ class ListCreateFiles(generics.ListCreateAPIView):
         )
 
 class DownloadFile(views.APIView):
-    serializer_class = FileSerializer
-    permissions_classes = [IsOwnerOrIsPublic]
+    permission_classes = [IsOwnerOrIsPublic]
 
     def get_queryset(self):
         id = self.kwargs['pk']
@@ -47,11 +46,11 @@ class DownloadFile(views.APIView):
         Download the file.
         """
         file = File.objects.get(id=pk)
-        print(file.file_name)
+        self.check_object_permissions(request, file)
         res = HttpResponse(status=200)
         res['Content-Type'] = ''
         res["Content-Disposition"] = f"attachment; filename={file.file_name}"
-        #res['X-Accel-Redirect'] = f"/protected/{file.file_name}"
+        res['X-Accel-Redirect'] = f"/protected/{file.file_name}"
         return res
 
 class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):

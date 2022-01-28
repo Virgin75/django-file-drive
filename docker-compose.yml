@@ -7,6 +7,7 @@ services:
       - 80:80
     volumes:
       - ./static:/app/static
+      - ./uploads:/app/uploads
     depends_on:
       - web
     restart: "on-failure"

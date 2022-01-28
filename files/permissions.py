@@ -21,9 +21,8 @@ class IsOwnerOrIsPublic(permissions.BasePermission):
     message = 'You are not allowed to perform this action.'
 
     def has_object_permission(self, request, view, obj):
-
         if request.method == 'GET':
-            user = self.request.user
+            user = request.user
             owner = obj.owner
             print(owner, user)
 
@@ -31,7 +30,7 @@ class IsOwnerOrIsPublic(permissions.BasePermission):
                 return True
         
         if request.method in ('PUT', 'PATCH', 'DELETE'):
-            user = self.request.user
+            user = request.user
             owner = obj.owner
 
             if user == owner:
