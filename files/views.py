@@ -59,7 +59,11 @@ class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):
     permissions_classes = [IsOwnerOrIsPublic]
     lookup_field = 'pk'
 
-#TODO: Ajouter une vue pour télécharger un fichier et modifier le lien de dl dans le serializer file
+class ShareFile(generics.CreateAPIView):
+    pass
+
+class ShareFolder(generics.CreateAPIView):
+    pass
 
 class ListCreateFolders(generics.ListCreateAPIView):
     serializer_class = FolderSerializer
