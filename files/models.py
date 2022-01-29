@@ -31,6 +31,7 @@ class File(models.Model):
 # Ajouter couleur du dossier
 class Folder(models.Model):
     folder_name = models.CharField(max_length=50)
+    color = models.CharField(max_length=9, null=True)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE,
