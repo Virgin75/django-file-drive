@@ -4,7 +4,7 @@ from rest_framework import generics, views, response
 from rest_framework.permissions import IsAuthenticated
 from .models import File, Folder
 from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer
-from .permissions import IsObjectOwner, IsOwnerOrIsPublic
+from .permissions import IsObjectOwner, IsOwnerOrIsPublic, IsAllowedToAccessObject
 
 class ListCreateFiles(generics.ListCreateAPIView):
     serializer_class = FileSerializer
@@ -34,7 +34,7 @@ class ListCreateFiles(generics.ListCreateAPIView):
         )
 
 class DownloadFile(views.APIView):
-    permission_classes = [IsOwnerOrIsPublic]
+    permission_classes = [IsOwnerOrIsPublic|IsAllowedToAccessObject]
 
     def get_queryset(self):
         id = self.kwargs['pk']
@@ -56,7 +56,7 @@ class DownloadFile(views.APIView):
 class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FileSerializer
     queryset = File.objects.all()
-    permission_classes = [IsOwnerOrIsPublic]
+    permission_classes = [IsOwnerOrIsPublic|IsAllowedToAccessObject]
     lookup_field = 'pk'
 
 class ShareFile(generics.CreateAPIView):

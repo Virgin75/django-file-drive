@@ -1,5 +1,6 @@
 from rest_framework import permissions
 from django.conf import settings
+from .models import SharedWith
 
 class IsObjectOwner(permissions.BasePermission):
     """
@@ -37,3 +38,24 @@ class IsOwnerOrIsPublic(permissions.BasePermission):
             if user == owner:
                 return True
 
+class IsAllowedToAccessObject(permissions.BasePermission):
+    """
+    Object-level permission to allow people that have been
+    shared access to a file or a folder to access it.
+    """
+    def has_object_permission(self, request, view, obj):
+        user_requesting_access = request.user
+
+        if(type(obj).__name__ == 'File'):
+            file_shared_with = SharedWith.objects.filter(file=obj)
+            for person in file_shared_with:
+                if person.user == user_requesting_access:
+                    return True
+        
+        if(type(obj).__name__ == 'Folder'):
+            folder_shared_with = SharedWith.objects.filter(folder=obj)
+            for person in folder_shared_with:
+                if person.user == user_requesting_access:
+                    return True
+        
+        return False
