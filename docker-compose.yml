@@ -27,7 +27,7 @@ services:
              python3 manage.py makemigrations files &&
              python3 manage.py migrate &&
              python3 manage.py collectstatic --noinput &&
-             gunicorn --bind 0.0.0.0:8000 config.wsgi"
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
       - ./static:/app/static

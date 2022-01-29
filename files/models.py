@@ -65,3 +65,9 @@ class SharedWith(models.Model):
         blank=True,
         on_delete=models.CASCADE
     )
+
+    def __str__(self):
+        if self.file is not None:
+            return f"'{self.file}' shared with {self.user}"
+        if self.folder is not None:
+            return f"'{self.folder}' shared with {self.user}"

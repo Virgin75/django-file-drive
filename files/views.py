@@ -1,9 +1,9 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework import generics, views, response
 from rest_framework.permissions import IsAuthenticated
 from .models import File, Folder
-from .serializers import FileSerializer, FolderSerializer
+from .serializers import FileSerializer, FolderSerializer, CreateShareWithSerializer
 from .permissions import IsObjectOwner, IsOwnerOrIsPublic
 
 class ListCreateFiles(generics.ListCreateAPIView):
@@ -60,7 +60,14 @@ class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'pk'
 
 class ShareFile(generics.CreateAPIView):
-    pass
+    permission_classes = []
+    serializer_class = CreateShareWithSerializer
+
+    def perform_create(self, serializer):
+        file_pk = self.kwargs.get("pk")
+        file = get_object_or_404(File, id=file_pk)
+        serializer.save(file=file)
+
 
 class ShareFolder(generics.CreateAPIView):
     pass
