@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework import generics, views, response
 from rest_framework.permissions import IsAuthenticated
 from .models import File, Folder
-from .serializers import FileSerializer, FolderSerializer, CreateShareWithSerializer
+from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer
 from .permissions import IsObjectOwner, IsOwnerOrIsPublic
 
 class ListCreateFiles(generics.ListCreateAPIView):
@@ -56,21 +56,30 @@ class DownloadFile(views.APIView):
 class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FileSerializer
     queryset = File.objects.all()
-    permissions_classes = [IsOwnerOrIsPublic]
+    permission_classes = [IsOwnerOrIsPublic]
     lookup_field = 'pk'
 
 class ShareFile(generics.CreateAPIView):
-    permission_classes = []
-    serializer_class = CreateShareWithSerializer
+    permission_classes = [IsObjectOwner]
+    serializer_class = ShareWithSerializer
 
     def perform_create(self, serializer):
         file_pk = self.kwargs.get("pk")
         file = get_object_or_404(File, id=file_pk)
+        self.check_object_permissions(self.request, file)
         serializer.save(file=file)
 
 
 class ShareFolder(generics.CreateAPIView):
-    pass
+    permission_classes = [IsObjectOwner]
+    serializer_class = ShareWithSerializer
+
+    def perform_create(self, serializer):
+        folder_pk = self.kwargs.get("pk")
+        folder = get_object_or_404(Folder, id=folder_pk)
+        self.check_object_permissions(self.request, folder)
+        serializer.save(folder=folder)
+
 
 class ListCreateFolders(generics.ListCreateAPIView):
     serializer_class = FolderSerializer

@@ -8,7 +8,8 @@ class IsObjectOwner(permissions.BasePermission):
     message = 'You must be owner of this object.'
 
     def has_object_permission(self, request, view, obj):
-        user = self.request.user
+        print('aaa')
+        user = request.user
         owner = obj.owner
         return user == owner
 
@@ -18,7 +19,7 @@ class IsOwnerOrIsPublic(permissions.BasePermission):
     or any users (if file is set to public) to retrieve it.
     > Only owner of file can edit it or delete it.
     """
-    message = 'You are not allowed to perform this action.'
+    message = 'You must either be owner of this object OR the object must be public to perform this action.'
 
     def has_object_permission(self, request, view, obj):
         if request.method == 'GET':
@@ -35,3 +36,4 @@ class IsOwnerOrIsPublic(permissions.BasePermission):
 
             if user == owner:
                 return True
+

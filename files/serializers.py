@@ -1,6 +1,7 @@
 from .models import File, Folder, SharedWith
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from users.serializers import UserSerializer
 
 
 class FileSerializer(serializers.ModelSerializer):
@@ -34,11 +35,11 @@ class FolderSerializer(serializers.ModelSerializer):
             'owner': {'read_only': True}
         }
 
-class CreateShareWithSerializer(serializers.Serializer):
+class ShareWithSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True)
-    file = serializers.PrimaryKeyRelatedField(read_only=True)
-    folder = serializers.PrimaryKeyRelatedField(read_only=True)
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    file = FileSerializer(read_only=True)
+    folder = FolderSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
 
     def create(self, validated_data):
         user_to_share = get_user_model().objects.get(
