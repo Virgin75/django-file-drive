@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import RegexValidator
 
 class File(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -28,10 +29,18 @@ class File(models.Model):
         return self.file_name
     
 
-# Ajouter couleur du dossier
 class Folder(models.Model):
     folder_name = models.CharField(max_length=50)
-    color = models.CharField(max_length=9, null=True)
+    color = models.CharField(
+        max_length=7,
+        null=True,
+        validators=[
+            RegexValidator(
+                regex="#[a-fA-F0-9]{6}$",
+                message='Color must be in HEX format with #. Ex: #FFFFFF'
+            )
+        ]
+    )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE,
