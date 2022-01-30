@@ -100,16 +100,41 @@ class ShareFile(
         return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# A FAIRE : Ajouter CreateModelMixin et DestroyModelMiin pour retirer un partage
-class ShareFolder(generics.CreateAPIView):
+
+class ShareFolder(
+    generics.GenericAPIView, 
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin
+    ):
     permission_classes = [IsObjectOwner]
     serializer_class = ShareWithSerializer
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            return self.create(request, *args, **kwargs)
+        except IntegrityError:
+            content = {'error': 'This folder has already been shared with this user.'}
+            return response.Response(content, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         folder_pk = self.kwargs.get("pk")
         folder = get_object_or_404(Folder, id=folder_pk)
         self.check_object_permissions(self.request, folder)
         serializer.save(folder=folder)
+    
+    def destroy(self, request, *args, **kwargs):
+        folder_pk = self.kwargs.get("pk")
+        folder = get_object_or_404(Folder, id=folder_pk)
+        self.check_object_permissions(request, folder)
+        user_with_access = get_user_model().objects.get(
+            email=request.data['email']
+        )
+        instance = SharedWith.objects.get(folder=folder, user=user_with_access)
+        self.perform_destroy(instance)
+        return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ListCreateFolders(generics.ListCreateAPIView):
