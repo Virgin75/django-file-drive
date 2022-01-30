@@ -43,12 +43,21 @@ class FileSerializer(serializers.ModelSerializer):
         return f"/api/files/{obj.id}/download"
 
 class FolderSerializer(serializers.ModelSerializer):
+    shared_with_users = serializers.SerializerMethodField()
+
     class Meta:
         model = Folder
-        fields = ['id', 'folder_name', 'owner', 'parent_folder']
+        fields = ['id', 'folder_name', 'owner', 'parent_folder', 'shared_with_users']
         extra_kwargs = {
             'owner': {'read_only': True}
         }
+    
+    def get_shared_with_users(self, obj):
+        users = SharedWith.objects.filter(folder=obj).values('user')
+        results = []
+        for user in users:
+            results.append(user['user'])
+        return results
 
 class ShareWithSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True)
