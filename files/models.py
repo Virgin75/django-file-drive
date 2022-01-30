@@ -76,6 +76,22 @@ class SharedWith(models.Model):
         on_delete=models.CASCADE
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'folder', 'file'], 
+                name='Unique share'
+            ),
+            models.UniqueConstraint(
+                fields=['user', 'file'],
+                name='unique_without_folder'
+            ),
+            models.UniqueConstraint(
+                fields=['user', 'folder'],
+                name='unique_without_file'
+            ),
+        ]
+
     def __str__(self):
         if self.file is not None:
             return f"'{self.file}' shared with {self.user}"

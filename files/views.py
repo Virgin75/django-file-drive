@@ -1,8 +1,12 @@
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
-from rest_framework import generics, views, response
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from django.db import IntegrityError
+
+from rest_framework import generics, views, mixins, response, status
 from rest_framework.permissions import IsAuthenticated
-from .models import File, Folder
+
+from .models import File, Folder, SharedWith
 from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer
 from .permissions import IsObjectOwner, IsOwnerOrIsPublic, IsAllowedToAccessObject
 
@@ -59,17 +63,44 @@ class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrIsPublic|IsAllowedToAccessObject]
     lookup_field = 'pk'
 
-class ShareFile(generics.CreateAPIView):
+
+class ShareFile(
+    generics.GenericAPIView, 
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin
+    ):
     permission_classes = [IsObjectOwner]
     serializer_class = ShareWithSerializer
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            return self.create(request, *args, **kwargs)
+        except IntegrityError:
+            content = {'error': 'This file has already been shared with this user.'}
+            return response.Response(content, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         file_pk = self.kwargs.get("pk")
         file = get_object_or_404(File, id=file_pk)
         self.check_object_permissions(self.request, file)
         serializer.save(file=file)
+        
+    def destroy(self, request, *args, **kwargs):
+        file_pk = self.kwargs.get("pk")
+        file = get_object_or_404(File, id=file_pk)
+        self.check_object_permissions(request, file)
+        user_with_access = get_user_model().objects.get(
+            email=request.data['email']
+        )
+        instance = SharedWith.objects.get(file=file, user=user_with_access)
+        self.perform_destroy(instance)
+        return response.Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# A FAIRE : Ajouter CreateModelMixin et DestroyModelMiin pour retirer un partage
 class ShareFolder(generics.CreateAPIView):
     permission_classes = [IsObjectOwner]
     serializer_class = ShareWithSerializer
