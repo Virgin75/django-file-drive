@@ -5,10 +5,14 @@ from users.serializers import UserSerializer
 
 
 class FileSerializer(serializers.ModelSerializer):
+    shared_with_users = serializers.SerializerMethodField()
+    download_url = serializers.SerializerMethodField()
+
     class Meta:
         model = File
         fields = [
             'id', 
+            'download_url',
             'created_at', 
             'updated_at', 
             'file_name', 
@@ -17,6 +21,7 @@ class FileSerializer(serializers.ModelSerializer):
             'file', 
             'owner', 
             'parent_folder',
+            'shared_with_users'
         ]
         extra_kwargs = {
             'file_type': {'read_only': True},
@@ -26,6 +31,16 @@ class FileSerializer(serializers.ModelSerializer):
             'owner': {'read_only': True},
             'file': {'write_only': True},
         }
+    
+    def get_shared_with_users(self, obj):
+        users = SharedWith.objects.filter(file=obj).values('user')
+        results = []
+        for user in users:
+            results.append(user['user'])
+        return results
+
+    def get_download_url(self, obj):
+        return f"/api/files/{obj.id}/download"
 
 class FolderSerializer(serializers.ModelSerializer):
     class Meta:
