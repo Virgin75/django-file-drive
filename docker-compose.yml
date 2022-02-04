@@ -1,6 +1,7 @@
 version: "3.3"
    
 services:
+  
   nginx:
     build: ./nginx
     ports:
@@ -11,6 +12,7 @@ services:
     depends_on:
       - web
     restart: "on-failure"
+  
   db:
     image: postgres
     volumes:
@@ -20,6 +22,7 @@ services:
     env_file: 
       - .env
     restart: "on-failure"
+  
   web:
     build: .
     command: >
@@ -38,3 +41,23 @@ services:
     restart: "on-failure"
     depends_on:
       - db
+    
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "6379:6379"
+    depends_on:
+      - web
+  
+  celery:
+    build: .
+    command: celery -A config worker -l INFO
+    volumes:
+      - .:/app
+      - ./static:/app/static
+    env_file: 
+      - .env
+    restart: "on-failure"
+    depends_on:
+      - redis
+      - web

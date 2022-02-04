@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import File, Folder, SharedWith
 from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer, FolderWithContentSerializer
 from .permissions import IsObjectOwner, IsOwnerOrIsPublic, IsAllowedToAccessObject
+from .tasks import generate_thumbnail
 
 class ListCreateFiles(generics.ListCreateAPIView):
     serializer_class = FileSerializer
@@ -30,12 +31,15 @@ class ListCreateFiles(generics.ListCreateAPIView):
         user = self.request.user
 
 
-        serializer.save(
+        file_obj = serializer.save(
             file_type=file_type, 
             file_size=file_size,
             file_name=file_name,
             owner=user
         )
+
+        #Celery task to generate the thumbnail
+        generate_thumbnail.delay(file_obj.id)
 
 class DownloadFile(views.APIView):
     permission_classes = [IsOwnerOrIsPublic|IsAllowedToAccessObject]

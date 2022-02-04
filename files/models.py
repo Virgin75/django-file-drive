@@ -10,6 +10,7 @@ class File(models.Model):
     file_type = models.CharField(null=True, max_length=35)
     file_size = models.FloatField(null=True)
     is_public = models.BooleanField(default=False, null=True)
+    thumbnail = models.ImageField(upload_to='uploads/thumbnails', null=True)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE

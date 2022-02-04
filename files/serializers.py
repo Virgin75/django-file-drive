@@ -18,13 +18,15 @@ class FileSerializer(serializers.ModelSerializer):
             'file_name', 
             'file_type', 
             'file_size', 
-            'file', 
+            'file',
+            'thumbnail',
             'owner', 
             'parent_folder',
             'shared_with_users'
         ]
         extra_kwargs = {
             'file_type': {'read_only': True},
+            'thumbnail': {'read_only': True},
             'file_size': {'read_only': True},
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
