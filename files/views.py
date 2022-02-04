@@ -151,6 +151,13 @@ class ListCreateFolders(generics.ListCreateAPIView):
         user = self.request.user
         serializer.save(owner=user)
 
+class RetrieveUpdateDestroyFolder(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = FolderSerializer
+    queryset = Folder.objects.all()
+    permission_classes = [IsObjectOwner|IsAllowedToAccessObject]
+    lookup_field = 'pk'
+
+
 class RetrieveContentInFolder(generics.RetrieveAPIView):
     serializer_class = FolderWithContentSerializer
     permission_classes = [IsObjectOwner|IsAllowedToAccessObject]

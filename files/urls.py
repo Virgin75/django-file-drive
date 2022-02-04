@@ -5,6 +5,7 @@ from .views import (
     ListCreateFolders, 
     RetrieveContentInFolder,
     RetrieveUpdateDestroyFile,
+    RetrieveUpdateDestroyFolder,
     DownloadFile,
     ShareFile,
     ShareFolder
@@ -16,6 +17,7 @@ urlpatterns = [
     path('files/<int:pk>/download', DownloadFile.as_view(), name="downloadfile"),
     path('files/share/<int:pk>', ShareFile.as_view(), name="sharefile"),
     path('folders/', ListCreateFolders.as_view(), name="listcreatefolders"),
+    path('folders/<int:pk>', RetrieveUpdateDestroyFolder.as_view(), name="retrieveupdatedestroyfolder"),
     path('folders/<int:pk>/content', RetrieveContentInFolder.as_view(), name="retrievefilesinfolder"),
     path('folders/share/<int:pk>', ShareFolder.as_view(), name="sharefolder"),
 ]
