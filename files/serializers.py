@@ -59,6 +59,24 @@ class FolderSerializer(serializers.ModelSerializer):
             results.append(user['user'])
         return results
 
+class FolderWithContentSerializer(serializers.ModelSerializer):
+    files = serializers.SerializerMethodField()
+    subfolders = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Folder
+        fields = ['folder_name', 'parent_folder', 'subfolders', 'files']
+    
+    def get_files(self, obj):
+        files_in_folder = File.objects.filter(parent_folder=obj.id)
+        files_serializer = FileSerializer(files_in_folder, many=True)
+        return files_serializer.data
+
+    def get_subfolders(self, obj):
+        subfolders_in_folder = Folder.objects.filter(parent_folder=obj.id)
+        subfolders_serializer = FolderSerializer(subfolders_in_folder, many=True)
+        return subfolders_serializer.data
+
 class ShareWithSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True)
     file = FileSerializer(read_only=True)

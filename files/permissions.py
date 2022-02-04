@@ -9,7 +9,6 @@ class IsObjectOwner(permissions.BasePermission):
     message = 'You must be owner of this object.'
 
     def has_object_permission(self, request, view, obj):
-        print('aaa')
         user = request.user
         owner = obj.owner
         return user == owner

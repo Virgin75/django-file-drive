@@ -7,7 +7,7 @@ from rest_framework import generics, views, mixins, response, status
 from rest_framework.permissions import IsAuthenticated
 
 from .models import File, Folder, SharedWith
-from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer
+from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer, FolderWithContentSerializer
 from .permissions import IsObjectOwner, IsOwnerOrIsPublic, IsAllowedToAccessObject
 
 class ListCreateFiles(generics.ListCreateAPIView):
@@ -151,13 +151,8 @@ class ListCreateFolders(generics.ListCreateAPIView):
         user = self.request.user
         serializer.save(owner=user)
 
-#TODO:Check if requester is owner of folder & files OR some has shared it with him/her
-class RetrieveFilesInFolder(generics.ListAPIView):
-    serializer_class = FileSerializer
-    permission_classes = [IsAuthenticated, IsObjectOwner]
-
-    def get_queryset(self):
-        files_in_folder = File.objects.filter(
-            parent_folder=self.kwargs['pk']
-        )
-        return files_in_folder
+class RetrieveContentInFolder(generics.RetrieveAPIView):
+    serializer_class = FolderWithContentSerializer
+    permission_classes = [IsObjectOwner|IsAllowedToAccessObject]
+    lookup_field = 'pk'
+    queryset = Folder.objects.all()
