@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import RegexValidator
 
+
 class File(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
@@ -18,13 +19,8 @@ class File(models.Model):
     parent_folder = models.ForeignKey(
         'Folder',
         null=True,
-        blank=True,
         on_delete=models.CASCADE
     )
-
-    @property
-    def download_url(self):
-        return f"/files/download/{self.id}"
 
     def __str__(self):
         return self.file_name
@@ -53,6 +49,7 @@ class Folder(models.Model):
         blank=True,
         on_delete=models.CASCADE
     )
+    root_folder = models.BooleanField(default=False, null=True, blank=True)
 
     def __str__(self):
         return self.folder_name

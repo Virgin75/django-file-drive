@@ -30,13 +30,24 @@ class ListCreateFiles(generics.ListCreateAPIView):
         # Get current user & set him/her as file owner
         user = self.request.user
 
-
-        file_obj = serializer.save(
+        # If no parent folder is defined, set root as parent folder
+        if self.request.data.get("parent_folder") is None:
+            parent_folder = Folder.objects.get(root_folder=True, owner=user)
+            file_obj = serializer.save(
             file_type=file_type, 
             file_size=file_size,
             file_name=file_name,
+            parent_folder=parent_folder,
             owner=user
         )
+        else:
+            file_obj = serializer.save(
+                file_type=file_type, 
+                file_size=file_size,
+                file_name=file_name,
+                owner=user
+            )
+        #1 bug : empecher la creation dans le dossier d'un autre
 
         #Celery task to generate the thumbnail
         generate_thumbnail.delay(
@@ -164,6 +175,14 @@ class RetrieveUpdateDestroyFolder(generics.RetrieveUpdateDestroyAPIView):
     queryset = Folder.objects.all()
     permission_classes = [IsObjectOwner|IsAllowedToAccessObject]
     lookup_field = 'pk'
+
+    #Override destroy to prevent deletion of root folder
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.root_folder == False:
+            self.perform_destroy(instance)
+            return response.Response(status=status.HTTP_204_NO_CONTENT)
+        return response.Response({'error': 'root folder cannot be deleted'})
 
 
 class RetrieveContentInFolder(generics.RetrieveAPIView):
