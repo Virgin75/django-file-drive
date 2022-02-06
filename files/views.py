@@ -39,7 +39,8 @@ class ListCreateFiles(generics.ListCreateAPIView):
         )
 
         #Celery task to generate the thumbnail
-        generate_thumbnail.delay(file_obj.id)
+        thumbnail_path = generate_thumbnail.delay(file_obj.file.name)
+        #serializer.save(thumbnail=thumbnail_path)
 
 class DownloadFile(views.APIView):
     permission_classes = [IsOwnerOrIsPublic|IsAllowedToAccessObject]
@@ -58,7 +59,7 @@ class DownloadFile(views.APIView):
         res = HttpResponse(status=200)
         res['Content-Type'] = ''
         res["Content-Disposition"] = f"attachment; filename={file.file_name}"
-        res['X-Accel-Redirect'] = f"/protected/{file.file_name}"
+        res['X-Accel-Redirect'] = f"/protected/{file.file.name[8:]}"
         return res
 
 class RetrieveUpdateDestroyFile(generics.RetrieveUpdateDestroyAPIView):
