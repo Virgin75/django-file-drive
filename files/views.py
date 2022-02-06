@@ -39,8 +39,11 @@ class ListCreateFiles(generics.ListCreateAPIView):
         )
 
         #Celery task to generate the thumbnail
-        thumbnail_path = generate_thumbnail.delay(file_obj.file.name)
-        #serializer.save(thumbnail=thumbnail_path)
+        generate_thumbnail.delay(
+            file_obj.file.name, 
+            file_obj.id,
+            file_obj.file_type
+            )
 
 class DownloadFile(views.APIView):
     permission_classes = [IsOwnerOrIsPublic|IsAllowedToAccessObject]
