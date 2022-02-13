@@ -6,7 +6,7 @@ from .models import CustomUser
 from files.models import Folder
 
 
-class SignUpView(generics.ListCreateAPIView):
+class SignUpView(generics.CreateAPIView):
     permission_classes = []
     serializer_class = UserSerializer
     queryset = CustomUser.objects.all()
@@ -31,3 +31,15 @@ class SignUpView(generics.ListCreateAPIView):
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, headers=headers)
+
+class RetrieveUpdateView(generics.RetrieveUpdateAPIView):
+    permission_classes = []
+    serializer_class = UserSerializer
+    queryset = CustomUser.objects.all()
+    lookup_field = 'pk'
+
+    def perform_update(self, serializer):
+        if self.request.user.id ==  int(self.kwargs.get("pk")):
+            serializer.save()
+        else:
+            return Response({'error': 'Cannot update others profile.'})
