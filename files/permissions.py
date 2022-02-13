@@ -1,6 +1,6 @@
 from rest_framework import permissions
 from django.conf import settings
-from .models import SharedWith
+from .models import SharedWith, Folder
 
 class IsObjectOwner(permissions.BasePermission):
     """
@@ -56,5 +56,28 @@ class IsAllowedToAccessObject(permissions.BasePermission):
             for person in folder_shared_with:
                 if person.user == user_requesting_access:
                     return True
+        
+        return False
+
+class CanWriteToFolderObject(permissions.BasePermission):
+    """
+    Object-level permission to allow only upload of a new file
+    in folders owned by the user,or folders shared with the user.
+    """
+    def has_permission(self, request, view):
+        if request.data.get('parent_folder') is None:
+            return True
+            
+        accessed_folder = request.data.get('parent_folder')
+
+        user_folders = Folder.objects.filter(owner=request.user).values_list('pk', flat=True)
+        shared_with_user = SharedWith.objects.filter(user=request.user)
+        folders_shared_with_user = [shared_with.folder.id for shared_with in shared_with_user]
+        print(list(user_folders), folders_shared_with_user)
+        if int(accessed_folder) in list(user_folders):
+            return True
+        
+        if int(accessed_folder) in list(folders_shared_with_user):
+            return True
         
         return False

@@ -8,12 +8,12 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import File, Folder, SharedWith
 from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer, FolderWithContentSerializer
-from .permissions import IsObjectOwner, IsOwnerOrIsPublic, IsAllowedToAccessObject
+from .permissions import IsObjectOwner, IsOwnerOrIsPublic, IsAllowedToAccessObject, CanWriteToFolderObject
 from .tasks import generate_thumbnail
 
 class ListCreateFiles(generics.ListCreateAPIView):
     serializer_class = FileSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, CanWriteToFolderObject]
 
     def get_queryset(self):
         user = self.request.user
