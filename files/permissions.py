@@ -72,7 +72,7 @@ class CanWriteToFolderObject(permissions.BasePermission):
 
         user_folders = Folder.objects.filter(owner=request.user).values_list('pk', flat=True)
         shared_with_user = SharedWith.objects.filter(user=request.user)
-        folders_shared_with_user = [shared_with.folder.id for shared_with in shared_with_user]
+        folders_shared_with_user = [shared_with.folder.id for shared_with in list(shared_with_user) if shared_with.folder is not None]
         print(list(user_folders), folders_shared_with_user)
         if int(accessed_folder) in list(user_folders):
             return True

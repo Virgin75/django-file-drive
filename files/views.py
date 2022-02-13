@@ -47,7 +47,6 @@ class ListCreateFiles(generics.ListCreateAPIView):
                 file_name=file_name,
                 owner=user
             )
-        #1 bug : empecher la creation dans le dossier d'un autre
 
         #Celery task to generate the thumbnail
         generate_thumbnail.delay(
@@ -154,6 +153,16 @@ class ShareFolder(
         instance = SharedWith.objects.get(folder=folder, user=user_with_access)
         self.perform_destroy(instance)
         return response.Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ListContentSharedWithMe(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ShareWithSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = SharedWith.objects.filter(user=user)
+        return queryset
 
 
 class ListCreateFolders(generics.ListCreateAPIView):

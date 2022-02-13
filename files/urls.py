@@ -8,7 +8,8 @@ from .views import (
     RetrieveUpdateDestroyFolder,
     DownloadFile,
     ShareFile,
-    ShareFolder
+    ShareFolder,
+    ListContentSharedWithMe
     )
 
 urlpatterns = [
@@ -20,4 +21,5 @@ urlpatterns = [
     path('folders/<int:pk>', RetrieveUpdateDestroyFolder.as_view(), name="retrieveupdatedestroyfolder"),
     path('folders/<int:pk>/content', RetrieveContentInFolder.as_view(), name="retrievefilesinfolder"),
     path('folders/<int:pk>/share', ShareFolder.as_view(), name="sharefolder"),
+    path('shared-with-me/', ListContentSharedWithMe.as_view(), name='listcontentsharedwithme')
 ]
