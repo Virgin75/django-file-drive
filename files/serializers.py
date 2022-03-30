@@ -1,4 +1,5 @@
 from .models import File, Folder, SharedWith
+from users.models import CustomUser
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from users.serializers import UserSerializer
@@ -38,7 +39,10 @@ class FileSerializer(serializers.ModelSerializer):
         users = SharedWith.objects.filter(file=obj).values('user')
         results = []
         for user in users:
-            results.append(user['user'])
+            user_id = user['user']
+            usr = CustomUser.objects.get(id=user_id)
+            results.append(usr.email)
+
         return results
 
     def get_download_url(self, obj):
@@ -58,7 +62,10 @@ class FolderSerializer(serializers.ModelSerializer):
         users = SharedWith.objects.filter(folder=obj).values('user')
         results = []
         for user in users:
-            results.append(user['user'])
+            user_id = user['user']
+            usr = CustomUser.objects.get(id=user_id)
+            results.append(usr.email)
+
         return results
 
 class FolderWithContentSerializer(serializers.ModelSerializer):
