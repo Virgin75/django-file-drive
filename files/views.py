@@ -7,6 +7,7 @@ from rest_framework import generics, views, mixins, response, status
 from rest_framework.permissions import IsAuthenticated
 
 from .models import File, Folder, SharedWith
+from users.models import CustomUser
 from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer, FolderWithContentSerializer
 from .permissions import IsObjectOwner, IsOwnerOrIsPublic, IsAllowedToAccessObject, CanWriteToFolderObject
 from .tasks import generate_thumbnail
@@ -99,6 +100,9 @@ class ShareFile(
         except IntegrityError:
             content = {'error': 'This file has already been shared with this user.'}
             return response.Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except CustomUser.DoesNotExist:
+            content = {'error': 'This user does not exist.'}
+            return response.Response(content, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         file_pk = self.kwargs.get("pk")
@@ -135,6 +139,9 @@ class ShareFolder(
             return self.create(request, *args, **kwargs)
         except IntegrityError:
             content = {'error': 'This folder has already been shared with this user.'}
+            return response.Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except CustomUser.DoesNotExist:
+            content = {'error': 'This user does not exist.'}
             return response.Response(content, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
