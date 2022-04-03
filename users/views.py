@@ -1,5 +1,7 @@
 from rest_framework import generics
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
 from django.contrib.auth import get_user_model
 from .serializers import UserSerializer
 from .models import CustomUser
@@ -32,14 +34,9 @@ class SignUpView(generics.CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, headers=headers)
 
-class RetrieveUpdateView(generics.RetrieveUpdateAPIView):
-    permission_classes = []
+class RetrieveUpdateView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
-    queryset = CustomUser.objects.all()
-    lookup_field = 'pk'
 
-    def perform_update(self, serializer):
-        if self.request.user.id ==  int(self.kwargs.get("pk")):
-            serializer.save()
-        else:
-            return Response({'error': 'Cannot update others profile.'})
+    def get_object(self):
+        return CustomUser.objects.get(id=self.request.user.id)
