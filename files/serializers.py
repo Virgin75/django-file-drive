@@ -53,7 +53,7 @@ class FolderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Folder
-        fields = ['id', 'folder_name', 'owner', 'parent_folder', 'shared_with_users']
+        fields = ['id', 'folder_name', 'owner', 'parent_folder', 'color', 'shared_with_users']
         extra_kwargs = {
             'owner': {'read_only': True}
         }
@@ -103,3 +103,7 @@ class ShareWithSerializer(serializers.Serializer):
             user=user_to_share, 
             **validated_data
         )
+
+class SearchResultsSerializer(serializers.Serializer):
+    files = FileSerializer(many=True)
+    folders = FolderSerializer(many=True)

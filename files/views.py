@@ -1,14 +1,17 @@
+from ast import keyword
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
+from collections import namedtuple
+
 
 from rest_framework import generics, views, mixins, response, status
 from rest_framework.permissions import IsAuthenticated
 
 from .models import File, Folder, SharedWith
 from users.models import CustomUser
-from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer, FolderWithContentSerializer
+from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer, FolderWithContentSerializer, SearchResultsSerializer
 from .permissions import IsObjectOwner, IsOwnerOrIsPublic, IsAllowedToAccessObject, CanWriteToFolderObject
 from .tasks import generate_thumbnail
 
@@ -206,3 +209,24 @@ class RetrieveContentInFolder(generics.RetrieveAPIView):
     permission_classes = [IsObjectOwner|IsAllowedToAccessObject]
     lookup_field = 'pk'
     queryset = Folder.objects.all()
+
+
+class SearchFilesAndFolders(generics.ListAPIView):
+    serializer_class = SearchResultsSerializer
+    queryset = File.objects.all()
+
+    def list(self, request):
+        user = self.request.user
+        file_queryset = File.objects.filter(owner=user)
+        folder_queryset = Folder.objects.filter(owner=user)
+        keyword = request.query_params.get('keyword')
+
+        serializer = self.get_serializer({'files': file_queryset, 'folders': folder_queryset})
+
+        if keyword:
+            file_queryset = file_queryset.filter(file_name__icontains=keyword)
+            folder_queryset = folder_queryset.filter(folder_name__icontains=keyword)
+            serializer = self.get_serializer({'files': file_queryset, 'folders': folder_queryset})
+
+        return response.Response(serializer.data)
+
