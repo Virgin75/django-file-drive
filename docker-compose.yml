@@ -9,6 +9,7 @@ services:
     volumes:
       - ./static:/app/static
       - ./uploads:/app/uploads
+      - ./thumbnails/uploads:/app/thumbnails/uploads
     depends_on:
       - web
     restart: "on-failure"
