@@ -17,7 +17,7 @@ def generate_thumbnail(file_name, file_id, file_type):
         img.save(output)
 
         file = File.objects.get(id=file_id)
-        file.thumbnail = output
+        file.thumbnail = output.replace('/uploads', '')
         file.save()
 
         logger.info(f"Thumbnail generated for file: {file_name}")
