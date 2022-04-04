@@ -9,6 +9,7 @@ from collections import namedtuple
 from rest_framework import generics, views, mixins, response, status
 from rest_framework.permissions import IsAuthenticated
 
+from config.settings import CORS_ALLOWED_ORIGINS
 from .models import File, Folder, SharedWith
 from users.models import CustomUser
 from .serializers import FileSerializer, FolderSerializer, ShareWithSerializer, FolderWithContentSerializer, SearchResultsSerializer
@@ -74,6 +75,7 @@ class DownloadFile(views.APIView):
         file = File.objects.get(id=pk)
         self.check_object_permissions(request, file)
         res = HttpResponse(status=200)
+        res['Access-Control-Allow-Origin'] = '*'
         res['Content-Type'] = ''
         res["Content-Disposition"] = f"attachment; filename={file.file_name}"
         res['X-Accel-Redirect'] = f"/protected/{file.file.name[8:]}"
