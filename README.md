@@ -3,17 +3,18 @@ It is an API allowing you to manage your own file drive in the cloud. You can se
 Here is a list of the main features of the API:
 - Mangage users
 - Manage files & folders
-- Manager who you share your file and folders with
+- Manage who you share your file and folders with
 - Search among your files and folders
 
-![App Screenshot](https://i.ibb.co/yySBLmm/apidoc.png)
-🔗 Check the [full documentation of the API on Postman.] for more information on all the endpoints.(https://documenter.getpostman.com/view/11214441/UVyvvE6f)
+![App Screenshot](https://i.ibb.co/yySBLmm/apidoc.png)  
+
+🔗 Check the [full documentation of the API on Postman.](https://documenter.getpostman.com/view/11214441/UVyvvE6f) for more information on all the endpoints.
 
 🚀 If you want a [live demo](#) of the API, you can check the [front-end repo](https://github.com/Virgin75/file-drive-front) that I created with React.
 This API was built with Python and Django Rest Framework.
 
 # How to deploy the project locally?
-The easiest way to test the API locally is to run it on your computer.
+The easiest way to test the API locally is to run it on your computer with Docker compose.
 
 1. Clone this repo locally
 2. `cd` to the directory of the downloaded repo on your device
