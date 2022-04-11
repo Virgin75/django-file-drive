@@ -1,6 +1,8 @@
 version: "3.3"
 
-
+volumes:
+  web_data:
+  
 services:
 
   nginx:
@@ -17,6 +19,8 @@ services:
   
   db:
     image: postgres
+    volumes:
+      - web_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     env_file: 
