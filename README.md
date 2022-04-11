@@ -18,14 +18,6 @@ The easiest way to test the API locally is to run it on your computer with Docke
 
 1. Clone this repo locally
 2. `cd` to the directory of the downloaded repo on your device
-3. Create a `.env` file in the root directory, with the following variable names (mandatory):
-``` bash
-DJANGO_SECRET_KEY=replace-with-anything-you-want
-POSTGRES_NAME=choose-your-db-name
-POSTGRES_USER=choose-your-db-password
-PGUSER=choose-your-db-username
-POSTGRES_PASSWORD=choose-your-db-password
-ENV=staging
-```
+3. Optionnaly: You can edit `.env` file in the root directory, with the db password of your choice as well as django secret key.
 4. Use `docker-compose` command to start the server with all the associated services (django app, db, nginx, celery & redis) : `sudo docker-compose up --build`
 5. Try to access this URL[http://127.0.0.1/admin/login/](http://127.0.0.1/admin/login/). If you see the Django admin login : the server is up and running 🎉
