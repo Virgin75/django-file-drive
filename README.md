@@ -21,3 +21,6 @@ The easiest way to test the API locally is to run it on your computer with Docke
 3. Optionnaly: You can edit `.env` file in the root directory, with the db password of your choice as well as django secret key.
 4. Use `docker-compose` command to start the server with all the associated services (django app, db, nginx, celery & redis) : `sudo docker-compose up --build`
 5. Try to access this URL[http://127.0.0.1/admin/login/](http://127.0.0.1/admin/login/). If you see the Django admin login : the server is up and running 🎉
+6. Create the django superuser in the db to access the admin view:
+  - Access the shell of the django container with : `sudo docker exec -it <insert_here_django_container_name> sh`
+  - Then `# python manage.py createsupersuer` will prompt you to input your email & password.
