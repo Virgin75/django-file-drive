@@ -1,26 +1,41 @@
 import pytest
+import json
 from django.contrib.auth import get_user_model
 
-# Test login with wrong credentials
+# Test account creation
 @pytest.mark.django_db
-def test_links_list(client):
-    get_user_model().objects.create_user(
-        email='virgin@gmail.com', 
-        password='Azerty123$'
+def test_create_account_route(client):
+    response = client.post(
+            '/signup',
+            {'email': 'virgin223@gmail.com',
+            'password': 'Azerty123$',
+            'first_name': 'Paul',
+            'last_name': 'Larousse'},
     )
+    resp_json = json.loads(response.content)
 
-    res = client.login(email='virgin@gmail.com', password='Lolol')
+    assert response.status_code == 200
+    assert resp_json['email'] == 'virgin223@gmail.com'
 
-    assert res is False
 
-# test login with right credentials
+# Test login
 @pytest.mark.django_db
-def test_links_list(client):
-    get_user_model().objects.create_user(
-        email='virgin@gmail.com', 
-        password='Azerty123$'
+def test_login_route(client):
+    #Create account
+    client.post(
+            '/signup',
+            {'email': 'virgin223@gmail.com',
+            'password': 'Azerty123$',
+            'first_name': 'Paul',
+            'last_name': 'Larousse'}
     )
-
-    res = client.login(email='virgin@gmail.com', password='Azerty123$')
-
-    assert res is True
+    #Login with previously created acccount
+    response = client.post(
+            '/api/token/',
+            {'email': 'virgin223@gmail.com',
+            'password': 'Azerty123$'},
+        )
+    resp_json = json.loads(response.content)
+    print(resp_json)
+    assert response.status_code == 200
+    assert len(resp_json['access']) >= 2
