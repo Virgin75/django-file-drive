@@ -157,3 +157,15 @@ def test_list_files(uploaded_file, auth_client):
     assert response.status_code == 200
     assert len(resp_json) == 1
     assert resp_json[0]['id'] == uploaded_file.id
+
+
+# Test Search files & folders
+@pytest.mark.django_db
+def test_search(auth_client, uploaded_file):
+    search_keyword = 'My'
+    endpoint = f'/api/search/?keyword={search_keyword}'
+    response = auth_client.get(endpoint)
+    resp_json = json.loads(response.content)
+    assert response.status_code == 200
+    assert resp_json['files'][0]['id'] == uploaded_file.id
+    assert len(resp_json['files']) == 1
