@@ -2,6 +2,7 @@ import pytest
 import json
 from django.contrib.auth import get_user_model
 from files.models import Folder, File
+from django.core.files import File as DjangoFile
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -39,6 +40,21 @@ def root_folder(db, user):
     return folder
 
 
+@pytest.fixture
+def uploaded_file(db, root_folder, user):
+    with open('README.md') as f:
+        wrapped_file = DjangoFile(f)
+        file = File.objects.create(
+            file=wrapped_file, 
+            file_name='My new file',
+            owner=user,
+            parent_folder=root_folder)
+        file.save()
+        return file
+    
+
+
+
 # Test create a folder
 @pytest.mark.django_db
 def test_create_folder(root_folder, auth_client):
@@ -62,7 +78,7 @@ def test_retrieve_folder_details(auth_client, root_folder):
     assert resp_json['id'] == root_folder.id
 
 
-# Test update a folder
+# Test rename a folder
 @pytest.mark.django_db
 def test_update_folder(root_folder, auth_client):
     response = auth_client.patch(f'/api/folders/{root_folder.id}', {
@@ -87,7 +103,57 @@ def test_share_folder(other_user, root_folder, auth_client):
 
 # Test delete a folder
 @pytest.mark.django_db
-def test_delete_folder(other_user, root_folder, auth_client):
+def test_delete_folder(root_folder, auth_client):
     endpoint = f'/api/folders/{root_folder.id}'
     response = auth_client.delete(endpoint)
     assert response.status_code == 204
+
+
+# Test download a file
+@pytest.mark.django_db
+def test_download_file(uploaded_file, auth_client):
+    endpoint = f'/api/files/{uploaded_file.id}/download'
+    response = auth_client.get(endpoint, follow_redirects = True)
+    assert "X-Accel-Redirect" in str(response.headers)
+    assert "protected/README" in str(response.headers)
+
+# Test delete a file
+@pytest.mark.django_db
+def test_delete_file(uploaded_file, auth_client):
+    endpoint = f'/api/files/{uploaded_file.id}'
+    response = auth_client.delete(endpoint)
+    assert response.status_code == 204
+
+
+# Test share a file with another user
+@pytest.mark.django_db
+def test_share_file(other_user, uploaded_file, auth_client):
+    endpoint = f'/api/files/{uploaded_file.id}/share'
+    response = auth_client.post(endpoint, {
+        'email': other_user.email,
+    })
+    resp_json = json.loads(response.content)
+    assert response.status_code == 201
+    assert resp_json['file']['id'] == uploaded_file.id
+
+
+# Test rename a file
+@pytest.mark.django_db
+def test_update_file(uploaded_file, auth_client):
+    response = auth_client.patch(f'/api/files/{uploaded_file.id}', {
+        'file_name': 'New file name',
+    })
+    resp_json = json.loads(response.content)
+    assert response.status_code == 200
+    assert resp_json['file_name'] == 'New file name'
+
+
+# Test list user's files
+@pytest.mark.django_db
+def test_list_files(uploaded_file, auth_client):
+    endpoint = f'/api/files/'
+    response = auth_client.get(endpoint)
+    resp_json = json.loads(response.content)
+    assert response.status_code == 200
+    assert len(resp_json) == 1
+    assert resp_json[0]['id'] == uploaded_file.id
