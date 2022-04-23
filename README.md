@@ -1,5 +1,5 @@
 # What is Django file Drive ?
-It is an API allowing you to manage your own file drive in the cloud. You can see it as a Google Drive API clone.
+It is a Python/Django API allowing you to manage your own file drive in the cloud. You can see it as a Google Drive API clone.
 Here is a list of the main features of the API:
 - Mangage users
 - Manage files & folders
