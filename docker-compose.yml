@@ -8,11 +8,13 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - 80:80
+      - 443:443
     volumes:
       - ./static:/app/static
       - ./uploads:/app/uploads
       - ./thumbnails/uploads:/app/thumbnails/uploads
+      - ./nginx/nginx.key:/app/nginx/nginx.key
+      - ./nginx/nginx-certificate.crt:/app/nginx/nginx-certificate.crt
     depends_on:
       - web
     restart: "on-failure"

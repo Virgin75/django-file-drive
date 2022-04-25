@@ -34,7 +34,13 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost',
     'http://localhost:3000',
     'http://127.0.0.1',
-    'http://172.19.0.1'
+    'http://172.19.0.1',
+    'https://localhost',
+    'https://localhost:3000',
+    'https://127.0.0.1',
+    'https://172.19.0.1',
+    'https://file-drive-front.netlify.app'
+
 ]
 
 # Application definition

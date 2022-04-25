@@ -1,5 +1,5 @@
 # What is Django file Drive ?
-It is an API allowing you to manage your own file drive in the cloud. You can see it as a Google Drive API clone.
+It is a Python/Django API allowing you to manage your own file drive in the cloud. You can see it as a Google Drive API clone.
 Here is a list of the main features of the API:
 - Mangage users
 - Manage files & folders
@@ -10,7 +10,7 @@ Here is a list of the main features of the API:
 
 🔗 Check the [full documentation of the API on Postman.](https://documenter.getpostman.com/view/11214441/UVyvvE6f) for more information on all the endpoints.
 
-🚀 If you want a [live demo](#) of the API, you can check the [front-end repo](https://github.com/Virgin75/file-drive-front) that I created with React.
+🚀 If you want a [live demo](https://file-drive-front.netlify.app/signup) of the API, you can check the [React front-end repo](https://github.com/Virgin75/file-drive-front) that I created with React.
 This API was built with Python and Django Rest Framework.
 
 # How to deploy the project locally?
