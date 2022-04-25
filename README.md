@@ -13,14 +13,14 @@ Here is a list of the main features of the API:
 🚀 If you want a [live demo](https://file-drive-front.netlify.app/signup) of the API, you can check the [React front-end repo](https://github.com/Virgin75/file-drive-front) that I created with React.
 This API was built with Python and Django Rest Framework.
 
-# How to deploy the project locally?
+# How to run the project locally?
 The easiest way to test the API locally is to run it on your computer with Docker compose.
 
-1. Clone this repo locally
+1. Clone [the staging branch](https://github.com/Virgin75/django-file-drive/tree/staging) locally (if you clone the production branch, you will need to setup an SSL certificate in nginx.conf).
 2. `cd` to the directory of the downloaded repo on your device
 3. Optionnaly: You can edit `.env` file in the root directory, with the db password of your choice as well as django secret key.
 4. Use `docker-compose` command to start the server with all the associated services (django app, db, nginx, celery & redis) : `sudo docker-compose up --build`
-5. Try to access this URL[http://127.0.0.1/admin/login/](http://127.0.0.1/admin/login/). If you see the Django admin login : the server is up and running 🎉
+5. Try to access this URL [http://127.0.0.1/admin/login/](http://127.0.0.1/admin/login/). If you see the Django admin login : the server is up and running 🎉
 6. Create the django superuser in the db to access the admin view:
   - Access the shell of the django container with : `sudo docker exec -it <insert_here_django_container_name> sh`
   - Then `# python manage.py createsupersuer` will prompt you to input your email & password.
